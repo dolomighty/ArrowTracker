@@ -1,0 +1,22 @@
+﻿{
+	"name": "Tracker",
+	"description": "Track nearest arrow",
+	"url": "",
+	"releases": [
+		{
+			"version": "",
+			"url": "",
+			"changes": "",
+			"dependencies": [],
+			"assets": [
+				{
+					"url": ""
+				}
+			]
+		}, {
+			"version": ""
+		}, {
+			"version": ""
+		}
+	]
+}
