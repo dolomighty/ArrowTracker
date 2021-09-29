@@ -14,70 +14,12 @@ namespace ArrowTracker
     
     public class Main : MelonMod
     {
-
-
-        //        const int samplerate = 8000;
-        //
-        //
-        //        AudioClip synth_ping( string name="ping", float hz=1000f, float attack_rate=0.1f, float release_rate=0.01f, float release_time=0.1f  ){
-        //            // genera una sinusoide con fasi di attack e release
-        //
-        //            int cliplen = (int)(samplerate * 0.1);
-        ////            MelonLogger.Msg("samplerate "+samplerate+" cliplen "+cliplen);
-        //
-        //            AudioClip ac = AudioClip.Create(name, cliplen, 1, samplerate, false );
-        //            MelonLogger.Msg(ac.name+" ac.samples "+ac.samples);
-        //
-        //            float[] data = new float [cliplen];
-        ////            MelonLogger.Msg("data "+data.Length);
-        //
-        //            int release_start = (int)(samplerate * release_time);
-        //
-        //            float gain_tgt = 1;
-        //            float rate = attack_rate;
-        //
-        //            float gain = 0;
-        //            int count = 0;
-        //            while (count < data.Length)
-        //            {
-        //                data[count] = (float)Math.Sin(2 * Math.PI * hz * count / samplerate) * gain;
-        //                gain += (gain_tgt-gain)*rate;
-        //
-        //                if(count==release_start){
-        //                    gain_tgt = 0;
-        //                    rate = release_rate;
-        //                }
-        //
-        //                count++;
-        //            }
-        //
-        //            MelonLogger.Msg(name+" data.Length "+data.Length);
-        //            ac.SetData(data,0);
-        //            MelonLogger.Msg(name+" ac.samples "+ac.samples);
-        //
-        //            return ac;
-        //        }
-
-
-
         public override void OnApplicationStart()
         {
             string tld_path = Path.GetFullPath(typeof(MelonMod).Assembly.Location + @"\..\..\");
 //            MelonLogger.Msg(tld_path);
             Vars.location_filename = Path.Combine(tld_path, "location.txt");
 //            MelonLogger.Msg(Vars.location_filename);
-//            Vars.ping_lo = synth_ping("ping_lo", 1000);
-//            Vars.ping_hi = synth_ping("ping_hi", 1200);
-
-
-//            var ac = AudioClip.Create("diocan", 44100, 1, 44100, false );
-//            ac.CreateUserSound("dioc", 44100, 1, 44100, false);
-////            AudioClip.SetName(ac, "qweasdqwe");
-////            ac.name = "qweasdqwe";
-//            MelonLogger.Msg("ac.GetName() " + ac.GetName() + " ac.samples " + ac.samples);
-//            //float[] asd = new float[1000];
-//            //AudioClip.SetData(ac,asd,asd.Length,0);
-
             ArrowTracker.Settings.OnLoad();
         }
 
@@ -88,15 +30,6 @@ namespace ArrowTracker
 //            Vars.scan_deadline = 0f;
 //        }
 
-
-
-
-        //public void log_location(string msg)
-        //{
-        //    if (File.Exists(Vars.location_filename)) return;
-        //    using (StreamWriter sw = new StreamWriter(Vars.location_filename))
-        //        sw.WriteLine(msg);
-        //}
 
 
         public void log_location(string region, Vector3 pos)
@@ -121,32 +54,53 @@ namespace ArrowTracker
 
 
 
-        static string[] dirs_arrows = { "←", "→", "↑", "↓" };
-        static string[] dirs_text = { "left", "right", "front", "back" };
+        static string[] dirs_arrows = { "↑", "↗", "→", "↘", "↓", "↙", "←", "↖" };
+        static string[] dirs_text = { "front", "right", "back", "left" };
+
 
         string facing_from_angle(float angle,string[] dirs)
         {
+            // angle ±[0,180]
             // angle   target bearing
             // 0       forward
             // >0      right
             // <0      left
-            if (angle >= -135 && angle <=  -45) return dirs[0];
-            if (angle >=  -45 && angle <=  +45) return dirs[2];
-            if (angle >=  +45 && angle <= +135) return dirs[1];
-            return dirs[3];
+            int idx = (int)Math.Floor(angle * dirs.Length / 360 + 0.5);
+            if (idx < 0) idx += dirs.Length;
+            return dirs[idx];
         }
-
 
 
         string mk_msg(string item, int dist, float angle)
         {
-            switch (Settings.options.Style)
+            //switch (Settings.options.Style)
+            //{
+            //    case 0: return item + " @ " + dist + " meters";                    
+            //    case 1: return item + " @ " + dist + " meters " + facing_from_angle(angle, dirs_text);                    
+            //    case 2: return item + " " + facing_from_angle(angle, dirs_arrows) + " " + dist + " meters";                    
+            //}
+            //return "wtf?!";
+
+            string msg = "";
+
+            switch (Settings.options.ShowItem)
             {
-                case 0: return item + " @ " + dist + " meters";                    
-                case 1: return item + " @ " + dist + " meters " + facing_from_angle(angle, dirs_text);                    
-                case 2: return item + " " + facing_from_angle(angle, dirs_arrows) + " " + dist + " meters";                    
+                case 1: msg += item; break;
             }
-            return "wtf?!";
+
+            switch (Settings.options.ShowDir)
+            {
+                case 0: msg += " @"; break;
+                case 1: msg += " " + facing_from_angle(angle, dirs_text); break;
+                case 2: msg += " " + facing_from_angle(angle, dirs_arrows); break;
+            }
+
+            switch (Settings.options.ShowDist)
+            {
+                case 1: msg += " " + dist + " meters"; break;
+            }
+
+            return msg;
         }
 
 
@@ -227,39 +181,39 @@ namespace ArrowTracker
         
 
         
-        void click() {
-            Vars.sound_deadline -= Time.deltaTime;
-            if (Vars.sound_deadline >= 0) return;  // nop
-            Vars.sound_deadline += 0.1f;
-
-            GameAudioManager.PlayGUIScroll();
-            
-            // AudioSource audio = GetComponent<AudioSource>();
-            // audio.clip = Vars.ping_lo;
-            // audio.Play();
-
-            // GameAudioManager.PlayOneShot(Vars.ping_lo,1);
-            // GameAudioManager.Play3DSound("asd", Vars.ping_lo);
-            // AudioSource.PlayClipAtPoint( Vars.ping_lo, pos );
-
-            //// da sempre len=0, perche?
-            //// ed anche il name non è mai settato
-            //AudioClip ac = AudioClip.Create("diocan", 44100, 1, 44100, false);
-            //AudioClip.SetName(ac, "qweasdqwe");
-            //MelonLogger.Msg(ac.GetName() + " ac.samples " + ac.samples);
-            //float[] asd = new float[1000];
-            //AudioClip.SetData(ac, asd, asd.Length, 0);
-            //MelonLogger.Msg(ac.GetName() + " ac.samples " + ac.samples);
-
-            // allora, leggendo sul discord dei modders di TLD
-            // TLD non usa l'audio base di unity, ma una lib di audiokinetic che si chiama wwave
-            // penso serva per l'audio posizionale, il calcolo dei riverberi, occlusioni, cose cosi
-
-            // TLDR: non è possibile al momento playare clips custom
-
-            // quindi l'unica è mostrare la distanza
-            // il massimo che si può fare ora è usare uno dei suoni stock
-        }
+//        void click() {
+//            Vars.sound_deadline -= Time.deltaTime;
+//            if (Vars.sound_deadline >= 0) return;  // nop
+//            Vars.sound_deadline += 0.1f;
+//
+//            GameAudioManager.PlayGUIScroll();
+//            
+//            // AudioSource audio = GetComponent<AudioSource>();
+//            // audio.clip = Vars.ping_lo;
+//            // audio.Play();
+//
+//            // GameAudioManager.PlayOneShot(Vars.ping_lo,1);
+//            // GameAudioManager.Play3DSound("asd", Vars.ping_lo);
+//            // AudioSource.PlayClipAtPoint( Vars.ping_lo, pos );
+//
+//            //// da sempre len=0, perche?
+//            //// ed anche il name non è mai settato
+//            //AudioClip ac = AudioClip.Create("diocan", 44100, 1, 44100, false);
+//            //AudioClip.SetName(ac, "qweasdqwe");
+//            //MelonLogger.Msg(ac.GetName() + " ac.samples " + ac.samples);
+//            //float[] asd = new float[1000];
+//            //AudioClip.SetData(ac, asd, asd.Length, 0);
+//            //MelonLogger.Msg(ac.GetName() + " ac.samples " + ac.samples);
+//
+//            // allora, leggendo sul discord dei modders di TLD
+//            // TLD non usa l'audio base di unity, ma una lib di audiokinetic che si chiama wwave
+//            // penso serva per l'audio posizionale, il calcolo dei riverberi, occlusioni, cose cosi
+//
+//            // TLDR: non è possibile al momento playare clips custom
+//
+//            // quindi l'unica è mostrare la distanza
+//            // il massimo che si può fare ora è usare uno dei suoni stock
+//        }
 
 
 

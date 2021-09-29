@@ -9,7 +9,7 @@ using ModSettings;
 namespace ArrowTracker
 {
 
-    
+
     internal class SettingsMain : JsonModSettings
     {
         [Section("General settings")]
@@ -18,17 +18,32 @@ namespace ArrowTracker
         [Description("")]
         public bool EnableMod = true;
 
-        [Name("Style")]
+        //[Name("Style")]
+        //[Description("")]
+        //[Choice("GEAR_ARROW @ 3 meters", "GEAR_ARROW @ 3 meters front", "GEAR_ARROW ↑ 3 meters", "↑ 3 meters", "3 meters")]
+        //public int Style = 1;
+
+        [Name("Direction")]
         [Description("")]
-        [Choice("GEAR_ARROW @ 3 meters", "GEAR_ARROW @ 3 meters front", "GEAR_ARROW ↑ 3 meters")]
-        public int Style = 1;
+        [Choice("hide", "front/left/...", "←↑→↓")]
+        public int ShowDir = 2;
+
+        [Name("Item")]
+        [Description("")]
+        [Choice("hide", "show")]
+        public int ShowItem = 1;
+
+        [Name("Distance")]
+        [Description("")]
+        [Choice("hide", "show")]
+        public int ShowDist = 1;
 
         //[Name("Enable location logging to disk")]
         //[Description("logs current location to file tracking.csv")]
         //public bool EnableCSV = false;
 
         protected override void OnChange(FieldInfo field, object oldValue, object newValue)
-        {           
+        {
             //GameManager.GetCameraEffects().DepthOfFieldTurnOff(true);
             //GameManager.GetCameraEffects().VignettingEnable(false);
             //GameManager.GetCameraEffects().ContrastEnhanceEnable(false);
@@ -57,7 +72,7 @@ namespace ArrowTracker
     internal static class Settings
     {
         public static SettingsMain options;
-        
+
         public static void OnLoad()
         {
             options = new SettingsMain();
