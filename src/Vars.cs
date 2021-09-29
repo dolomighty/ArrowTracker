@@ -15,9 +15,9 @@ namespace ArrowTracker
         public static string prev_txt = "";
         public static float sound_deadline = 0f;
 
-        public static GameObject SettingsBackgroundSprite;
-        public static GameObject SettingsBackgroundMark;
-        public static GameObject SettingsBackgroundVignette;
+        //public static GameObject SettingsBackgroundSprite;
+        //public static GameObject SettingsBackgroundMark;
+        //public static GameObject SettingsBackgroundVignette;
     }
 }
 
