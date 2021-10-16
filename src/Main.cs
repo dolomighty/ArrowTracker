@@ -226,15 +226,11 @@ namespace ArrowTracker
             // GameManager esiste sempre, ma i suoi membri no
             // quindi bisogna evitare di invocar roba che non c'è per non generar errori
             // la via del try/catch sembra esser l'unica maniera in cui funzioni sempre
-            try { var gpt = GameManager.GetPlayerTransform(); } catch { return; }
+            try { var gpt = GameManager.GetPlayerTransform().position; } catch { return; }
 
             scan();
             //click();
         }
-
-
-
-
 
 
 
