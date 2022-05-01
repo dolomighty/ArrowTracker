@@ -23,6 +23,10 @@ namespace ArrowTracker
         //[Choice("GEAR_ARROW @ 3 meters", "GEAR_ARROW @ 3 meters front", "GEAR_ARROW ↑ 3 meters", "↑ 3 meters", "3 meters")]
         //public int Style = 1;
 
+        [Name("Light")]
+        [Description("the arrow sparkles")]
+        public bool EnableLight = true;
+
         [Name("Direction")]
         [Description("")]
         [Choice("hide", "front/left/...", "←↑→↓")]
@@ -37,6 +41,11 @@ namespace ArrowTracker
         [Description("")]
         [Choice("hide", "show")]
         public int ShowDist = 1;
+
+        [Name("Compass")]
+        [Description("")]
+        [Choice("hide", "show")]
+        public int Compass = 1;
 
         //[Name("Enable location logging to disk")]
         //[Description("logs current location to file tracking.csv")]
